@@ -91,9 +91,6 @@ const AllProducts = () => {
                      >Delete</label>
                 </td>
               </tr>
-              
-                
-            
             ))} 
           </tbody>
         </table>
