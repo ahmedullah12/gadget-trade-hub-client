@@ -6,10 +6,11 @@ import axios from 'axios';
 import { useQuery } from 'react-query';
 import { FcCancel } from "react-icons/fc";
 import toast from 'react-hot-toast';
+import { MdVerified } from 'react-icons/md';
 
 const ProductDetails = () => {
     const product = useLoaderData();
-    const {_id,sellerName,sellerEmail, image, brand, description, originalPrice, resalePrice, productName, post_date, location, years_of_use} = product;
+    const {_id,sellerName,sellerEmail, image, brand, description, originalPrice, resalePrice, productName, post_date, location, years_of_use, sellerVerified} = product;
     const {user} = useContext(AuthContext);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [buttonState, setButtonState] = useState('');
@@ -108,7 +109,7 @@ const ProductDetails = () => {
                     <p className='mt-4'><span className='font-bold me-1'>Brand: </span>{brand}</p>
                     <p><span className='font-bold me-1'>Model: </span>{productName}</p>
                     <p><span className='font-bold me-1'>Description: </span>{description}</p>
-                    <p><span className='font-bold me-1'>Seller: </span>{sellerName}</p>
+                    <p><span className='font-bold me-1'>Seller:</span> {sellerName} <span>{sellerVerified === "true" && <MdVerified style={{ color: 'blue' }} className="inline mb-1"/>}</span></p>
                     <p><span className='font-bold me-1'>Location: </span>{location}</p>
                     <p><span className='font-bold me-1'>Original Price: </span>{originalPrice}</p>
                     <p><span className='font-bold me-1'>Resale Price: </span>{resalePrice}</p>

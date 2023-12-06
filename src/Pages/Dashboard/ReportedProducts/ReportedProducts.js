@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useQuery } from "react-query";
 import ConfirmationModal from "../../Shared/ConfirmationModal/ConfirmationModal";
+import { Link } from "react-router-dom";
 
 const ReportedProducts = () => {
   const [selectedProduct, setSelectedProduct] = useState(null)
@@ -70,9 +71,16 @@ const ReportedProducts = () => {
             {
                 reportedProducts.map((product, i) => <tr key={i}>
                     <th>{i+1}</th>
-                    <td>{product.productName}</td>
                     <td>
-                        
+                    <Link
+                    to={`/product/${product.productId}`}
+                    className="hover:underline"
+                    title="Click to view product details"
+                  >
+                    {product.productName}
+                  </Link>
+                    </td>
+                    <td>
                     </td>
                     <td>
                         <label onClick={() => openUpdateModal(product)} htmlFor="confirmation-modal" className="btn btn-xs btn-error text-white">Delete</label>

@@ -1,8 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { MdVerified } from "react-icons/md";
 
 const Product = ({ product }) => {
-    const {_id,productName, image, sellerName,resalePrice, post_date} = product;
+    const {_id,productName, image, sellerName,resalePrice, post_date, sellerVerified} = product;
   return (
     <div className="card bg-base-100 shadow-xl mb-4 md:mb-0">
       <figure className="px-10 pt-10">
@@ -14,7 +15,7 @@ const Product = ({ product }) => {
       </figure>
       <div className="card-body">
         <h2 className="card-title text-center">{productName}</h2>
-        <p>Seller: {sellerName}</p>
+        <p>Seller: {sellerName} <span>{sellerVerified === "true" && <MdVerified style={{ color: 'blue' }} className="inline mb-1"/>}</span></p>
         <p>Resale Price: {resalePrice}</p>
         <p>Post Date: {post_date}</p>
         <div className="card-actions mx-auto">
