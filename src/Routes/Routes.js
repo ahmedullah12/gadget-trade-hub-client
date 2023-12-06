@@ -11,7 +11,9 @@ import AllProducts from "../Pages/Dashboard/AllProducts/AllProducts";
 import MyBookings from "../Pages/Dashboard/MyBookings/MyBookings";
 import PrivateRoute from "./PrivateRoute";
 import MyWishlist from "../Pages/Dashboard/MyWishlist/MyWishlist";
-import AllUser from "../Pages/Dashboard/AllUser/AllUser";
+import AllSeller from "../Pages/Dashboard/AllSeller/AllSeller";
+import AllBuyer from "../Pages/Dashboard/AllBuyer/AllBuyer";
+import ReportedProducts from "../Pages/Dashboard/ReportedProducts/ReportedProducts";
 
 const router = createBrowserRouter([
     {
@@ -62,8 +64,16 @@ const router = createBrowserRouter([
                 element: <MyWishlist></MyWishlist>
             },
             {
-                path: '/dashboard/alluser',
-                element: <AllUser></AllUser>
+                path: '/dashboard/allseller',
+                element: <AllSeller></AllSeller>
+            },
+            {
+                path: '/dashboard/allbuyer',
+                element: <AllBuyer></AllBuyer>
+            },
+            {
+                path: '/dashboard/allreports',
+                element: <ReportedProducts></ReportedProducts>
             },
         ]
     }

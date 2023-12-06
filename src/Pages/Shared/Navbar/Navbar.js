@@ -9,7 +9,7 @@ const Navbar = () => {
   const {data: savedUser} = useQuery({
     queryKey: ["user",user],
     queryFn: async() => {
-      const res = await fetch(`https://phone-seller-server2.vercel.app/users?email=${user?.email}`);
+      const res = await fetch(`https://phone-seller-server2.vercel.app/user?email=${user?.email}`);
       const data = await res.json();
       return data;
     }
@@ -42,7 +42,7 @@ const Navbar = () => {
                     <Link to="/dashboard/mybookings">Dashboard</Link> :
                     savedUser?.role === "seller" ?
                     <Link to="/dashboard/allproducts">Dashboard</Link> :
-                    <Link to="dashboard/alluser">Dashboard</Link>
+                    <Link to="dashboard/allseller">Dashboard</Link>
                   }
                 </li>
                 <li className='text-secondary'>

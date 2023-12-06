@@ -34,7 +34,7 @@ const AllProducts = () => {
     })
     .then(res => res.json())
     .then(data => {
-     
+      console.log(data)
       if(data.deletedCount > 0){
           toast.success('Product Deleted');
           refetch();
@@ -109,7 +109,7 @@ const AllProducts = () => {
             <ConfirmationModal
             title="Are you sure to delete this product"
             action = {handleDeleteProduct}
-            actionData={selectedProduct}
+            actionDataId={selectedProduct._id}
             closeModal={closeUpdateModal}
             >
             

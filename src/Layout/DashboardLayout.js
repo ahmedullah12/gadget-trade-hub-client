@@ -11,7 +11,7 @@ const DashboardLayout = () => {
   const {data: savedUser = [], isLoading} = useQuery({
     queryKey: ["user",user],
     queryFn: async() => {
-      const res = await fetch(`https://phone-seller-server2.vercel.app/users?email=${user?.email}`);
+      const res = await fetch(`https://phone-seller-server2.vercel.app/user?email=${user?.email}`);
       const data = await res.json();
       return data;
     }
@@ -66,9 +66,17 @@ const DashboardLayout = () => {
                 </li>
               </>
               :
-              <li>
-                <Link to="/dashboard/alluser">All users</Link>
-              </li>
+              <>
+                <li>
+                  <Link to="/dashboard/allseller">All Seller</Link>
+                </li>
+                <li>
+                  <Link to="/dashboard/allbuyer">All Buyer</Link>
+                </li>
+                <li>
+                  <Link to="/dashboard/allreports">All Reported Products</Link>
+                </li>
+              </>
             }
           </ul>
         </div>

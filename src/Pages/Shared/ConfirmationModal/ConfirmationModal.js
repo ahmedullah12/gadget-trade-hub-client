@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ConfirmationModal = ({action, actionData, title, closeModal}) => {
+const ConfirmationModal = ({action, actionDataId, title, closeModal}) => {
     return (
         <div>
             <input type="checkbox"  id="confirmation-modal" className="modal-toggle" />
@@ -11,7 +11,7 @@ const ConfirmationModal = ({action, actionData, title, closeModal}) => {
                     <div className="modal-action">
 
                         {/* if there is a button in form, it will close the modal */}
-                        <label onClick={() => action(actionData._id)}   htmlFor="confirmation-modal" className="btn">Yes</label>
+                        <label onClick={() => action(actionDataId)}   htmlFor="confirmation-modal" className="btn">Yes</label>
                         <button onClick={closeModal}  className="btn">Cancel</button>
 
                     </div>
