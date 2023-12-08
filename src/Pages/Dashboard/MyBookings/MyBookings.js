@@ -4,6 +4,7 @@ import { useQuery } from "react-query";
 import axios from "axios";
 import ConfirmationModal from "../../Shared/ConfirmationModal/ConfirmationModal";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 
 const MyBookings = () => {
     const {user} = useContext(AuthContext);
@@ -42,12 +43,14 @@ const MyBookings = () => {
 
 
     if(isLoading){
-      return <span className="loading loading-spinner loading-lg mx-96 my-80"></span>
+      return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+      <span className="loading loading-spinner loading-lg"></span>
+    </div>
     }
   return (
     <div className="min-h-full ps-5 pe-2">
       <div className="overflow-x-auto">
-        <table className="table">
+        <table className="table table-zebra">
           {/* head */}
           <thead>
             <tr>
@@ -59,14 +62,27 @@ const MyBookings = () => {
           </thead>
           <tbody>
             {
-                bookings.map((booking, i) => <tr key={i} className="bg-base-200">
+                bookings.map((booking, i) => <tr key={i}>
                 <th>{i + 1}</th>
                 <td>{booking.productName}</td>
                 <td>
-                    <label onClick={() => openUpdateModal(booking)} htmlFor="confirmation-modal" className="btn btn-xs btn-error text-white">Cancel</label>
+                    <label onClick={() => openUpdateModal(booking)} htmlFor="confirmation-modal"
+                     className={`btn btn-xs ${booking.paid ? 'btn-disabled' : 'btn-error'} text-white`}>
+                      Cancel
+                    </label>
                 </td>
                 <td> 
-                    <button className="btn btn-xs btn-primary ">Pay</button>
+                    {
+                      booking.price && !booking.paid && <Link to={`/dashboard/payment/${booking._id}`}
+                      className="btn btn-xs btn-primary ">
+                        Pay
+                      </Link>
+                    }
+                    {
+                      booking.price && booking.paid && <span className="text-green-600">
+                        Paid
+                      </span>
+                    }
                 </td>
               </tr>)
             }
@@ -74,9 +90,10 @@ const MyBookings = () => {
         </table>
 
         {
+          selectedProduct && 
           <ConfirmationModal
           action={handleDeleteBooking}
-          actionDataId={selectedProduct?._id}
+          actionDataId={selectedProduct._id}
           title="Are you sure you want to cancel your booking?"
           closeModal={closeUpdateModal}
           >

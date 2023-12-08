@@ -59,6 +59,7 @@ const Navbar = () => {
             }
         </>
     )
+    
     return (
         <div className="navbar bg-primary text-white">
   <div className="navbar-start mx-3 md:mx-8 lg:mx-12" >

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthProvider";
@@ -6,6 +6,7 @@ import { AuthContext } from "../../contexts/AuthProvider";
 const Login = () => {
   const { register, handleSubmit, formState: {errors} } = useForm();
   const {loginWithEmail} = useContext(AuthContext);
+  const [loginError, setLoginError] = useState('')
   const navigate = useNavigate();
   const location = useLocation()
   
@@ -17,7 +18,12 @@ const Login = () => {
     .then(res => {
       navigate(from, {replace: true});
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      console.log(err.message);
+      const errorMessage = err.message;
+      const errorCode = errorMessage.startsWith('Firebase: Error (auth/') ? errorMessage.slice(22, -2) : errorMessage;
+      setLoginError(errorCode);
+    });
   }
   return (
     <div className="h-[600px] flex justify-center items-center">
@@ -48,7 +54,7 @@ const Login = () => {
                 </label>
                 {errors.password && <p className="text-red-600" role="alert">{errors.password.message}</p>}
             </div>
-
+            {loginError && <p className="text-red-700">Error: {loginError}</p>}
             <input className='btn btn-accent w-full my-4 text-white' value="Login" type="submit" />
         </form>
         <p>New to Phone Seller? Please <Link to='/signup' className="text-secondary">Sign Up.</Link></p>

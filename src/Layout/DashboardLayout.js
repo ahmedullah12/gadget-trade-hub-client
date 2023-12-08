@@ -8,7 +8,7 @@ import { CiCirclePlus } from "react-icons/ci";
 const DashboardLayout = () => {
   const {user} = useContext(AuthContext)
 
-  const {data: savedUser = [], isLoading} = useQuery({
+  const {data: savedUser, isLoading} = useQuery({
     queryKey: ["user",user],
     queryFn: async() => {
       const res = await fetch(`https://phone-seller-server2.vercel.app/user?email=${user?.email}`);
@@ -19,13 +19,15 @@ const DashboardLayout = () => {
 
 
   if(isLoading){
-    return <span className="loading loading-spinner loading-lg mx-96 my-80"></span>
+    return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+    <span className="loading loading-spinner loading-lg"></span>
+  </div>
   }
   return (
     <div>
       <label
             htmlFor="my-drawer-2"
-            className=" drawer-button absolute right-4 mt-4 top-[80%] lg:hidden"
+            className=" drawer-button absolute right-4 md:right-16 mt-4 top-[80%] lg:hidden"
           >
             <CiCirclePlus className="text-3xl text-primary" />
           </label>

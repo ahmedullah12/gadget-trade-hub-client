@@ -14,11 +14,14 @@ import MyWishlist from "../Pages/Dashboard/MyWishlist/MyWishlist";
 import AllSeller from "../Pages/Dashboard/AllSeller/AllSeller";
 import AllBuyer from "../Pages/Dashboard/AllBuyer/AllBuyer";
 import ReportedProducts from "../Pages/Dashboard/ReportedProducts/ReportedProducts";
+import Payment from "../Pages/Dashboard/Payment/Payment";
+import ErrorPage from "../Pages/Shared/ErrorPage/ErrorPage";
 
 const router = createBrowserRouter([
     {
         path: '',
         element: <MainLayout></MainLayout>,
+        errorElement: <ErrorPage></ErrorPage>,
         children: [
             {
                 path: '/',
@@ -46,6 +49,7 @@ const router = createBrowserRouter([
     {
         path: '/dashboard',
         element: <DashboardLayout></DashboardLayout>,
+        errorElement: <ErrorPage></ErrorPage>,
         children: [
             {
                 path: '/dashboard/allproducts',
@@ -74,6 +78,11 @@ const router = createBrowserRouter([
             {
                 path: '/dashboard/allreports',
                 element: <ReportedProducts></ReportedProducts>
+            },
+            {
+                path: '/dashboard/payment/:id',
+                element: <Payment></Payment>,
+                loader: ({params}) => fetch(`https://phone-seller-server2.vercel.app/booking/${params.id}`)
             },
         ]
     }

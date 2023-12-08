@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { useQuery } from "react-query";
 import ConfirmationModal from "../../Shared/ConfirmationModal/ConfirmationModal";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const ReportedProducts = () => {
   const [selectedProduct, setSelectedProduct] = useState(null)
@@ -25,6 +26,7 @@ const ReportedProducts = () => {
     setSelectedProduct(null);
   };
 
+  // Deleting the reported Product
   const handleDeleteProduct = (id) => {
     console.log(id)
     fetch(`https://phone-seller-server2.vercel.app/products?id=${id}`, {
@@ -34,19 +36,25 @@ const ReportedProducts = () => {
     .then(data => {
      console.log(data);
       if(data.deletedCount > 0){
-          fetch(`https://phone-seller-server2.vercel.app/reports?id=${id}`,{
+          handleRemoveProduct(id);
+      }
+  })
+  }
+
+  // Removing the Product from Reported Products
+  const handleRemoveProduct = (id) => {
+    console.log(id);
+    fetch(`https://phone-seller-server2.vercel.app/reports?id=${id}`,{
             method: "DELETE"
           })
           .then(res => res.json())
           .then(data => {
             if(data.deletedCount > 0){
-                toast.success('Product Deleted');
+                toast.success('Report Removed');
                 refetch();
             }
           })
-          
-      }
-  })
+          .catch(err => console.log(err))
   }
 
   if (isLoading) {
@@ -63,7 +71,7 @@ const ReportedProducts = () => {
             <tr>
               <th></th>
               <th>P Name</th>
-              <th></th>
+              <th>Remove</th>
               <th>Delete Product</th>
             </tr>
           </thead>
@@ -81,6 +89,7 @@ const ReportedProducts = () => {
                   </Link>
                     </td>
                     <td>
+                      <button onClick={() => handleRemoveProduct(product.productId)} className="btn btn-xs btn-primary">Remove</button>
                     </td>
                     <td>
                         <label onClick={() => openUpdateModal(product)} htmlFor="confirmation-modal" className="btn btn-xs btn-error text-white">Delete</label>
