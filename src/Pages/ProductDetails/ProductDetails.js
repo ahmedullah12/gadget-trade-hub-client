@@ -4,16 +4,30 @@ import BookingModal from '../BookingModal/BookingModal';
 import { AuthContext } from '../../contexts/AuthProvider';
 import axios from 'axios';
 import { useQuery } from 'react-query';
-import { FcCancel } from "react-icons/fc";
 import toast from 'react-hot-toast';
 import { MdVerified } from 'react-icons/md';
+import { GoHeart, GoHeartFill } from "react-icons/go";
+import { BsExclamationCircle, BsExclamationCircleFill } from "react-icons/bs";
 
 const ProductDetails = () => {
     const product = useLoaderData();
     const {_id,sellerName,sellerEmail, image, brand, description, originalPrice, resalePrice, productName, post_date, location, years_of_use, sellerVerified} = product;
     const {user} = useContext(AuthContext);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [buttonState, setButtonState] = useState('');
+    // const [isModalOpen, setIsModalOpen] = useState(false);
+    // const [buttonState, setButtonState] = useState('');
+
+
+    // get wishlist product
+    const {data: wishlistProducts = [], refetch: wishlistRefetch} = useQuery({
+        queryKey: ["wishlist products"],
+        queryFn: async() => {
+            const res = await fetch(`https://phone-seller-server2.vercel.app/wishlist?email=${user?.email}`)
+            const data = await res.json();
+            return data
+        }
+    })
+    const isWishlistProduct = wishlistProducts.some(wishedProducts => wishedProducts.productId === _id);
+    
     
     const {data: reportedProducts = [], isLoading, refetch} = useQuery({
         queryKey: ["reported products"],
@@ -23,57 +37,83 @@ const ProductDetails = () => {
             return data
         }
     })
-
-    
     const isProductReported = reportedProducts.some(reportedProduct => reportedProduct.productId === _id)
 
-    useEffect(() => {
-        const isProductInWishlist = localStorage.getItem(`wishlist_${_id}_${user?.email}`);
-        setButtonState(isProductInWishlist ? 'added' : '');
-    }, [user, _id]);
 
-    const handleAddtoWishlist = () => {
-        const product = {
-            productName: productName,
-            productId: _id,
-            sellerEmail: sellerEmail,
-            wishedUser: user?.displayName,
-            wishedUserEmail: user?.email,
+    const handleWishlist = () => {
+        if (isWishlistProduct === true) {
+            // If product is in wishlist, remove it
+            axios.delete(`https://phone-seller-server2.vercel.app/wishlist?productId=${_id}`)
+                .then(res => {
+                    if (res.status === 200 || res.status === 204) {  // Checking for success status
+                        wishlistRefetch();
+                        toast.success("Removed from Wishlist");
+                    }
+                })
+                .catch(err => console.log(err));
+        } else {
+            // If product is not in wishlist, add it
+            const product = {
+                productName: productName,
+                productId: _id,
+                sellerEmail: sellerEmail,
+                wishedUser: user?.displayName,
+                wishedUserEmail: user?.email,
+            }
+            axios.post("https://phone-seller-server2.vercel.app/wishlist", product)
+                .then(res => {
+                    if (res.status === 200) {  // Checking for Created status
+                        toast.success("Added to Wishlist");
+                        wishlistRefetch();
+                    }
+                })
+                .catch(err => console.log(err));
         }
-        axios.post("https://phone-seller-server2.vercel.app/wishlist", product)
-        .then(res => {
-            localStorage.setItem(`wishlist_${_id}_${user?.email}`, 'true');
-            toast.success("Added to Wishlist");
-            setButtonState('added');
-        })
-        .catch(err => console.log(err));
     }
     
+    
     const handleReport = () => {
-        const product = {
-            productName: productName,
-            productId: _id,
-            sellerEmail: sellerEmail,
-            reportedUser: user?.displayName,
-            reportedUserEmail: user?.email,
+        if(isProductReported === true){
+            axios.delete(`https://phone-seller-server2.vercel.app/reports?id=${_id}`)
+            .then(res => {
+                if(res.status === 200){
+                    toast.success("Product Unreported");
+                    refetch();
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
         }
-        axios.post("https://phone-seller-server2.vercel.app/user-reports", product)
-        .then(res => {
-            
-            setIsModalOpen(false);
-            toast.success("Product Reported");
-            refetch();
-        })
-        .catch(err => console.log(err))
+        else{
+            const product = {
+                productName: productName,
+                productId: _id,
+                sellerEmail: sellerEmail,
+                reportedUser: user?.displayName,
+                reportedUserEmail: user?.email,
+            }
+            axios.post("https://phone-seller-server2.vercel.app/user-reports", product)
+            .then(res => {
+                toast.success("Product Reported");
+                refetch();
+            })
+            .catch(err => console.log(err))
+        }
     }
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false)
-    }
      
     if(isLoading){
+        return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    }
+    
+    if (!_id || !sellerName || !sellerEmail || !image || !brand || !description || !originalPrice) {
         return (
-            <span className="loading loading-spinner loading-lg mx-96 my-80"></span>
+            <div className="text-center text-red-600 flex items-center justify-center min-h-screen px-4">
+                <p>Product has been deleted or is no longer available.</p>
+            </div>
         );
     }
     return (
@@ -82,29 +122,20 @@ const ProductDetails = () => {
 
             <div className='card w-[80%] md:w-[70%] lg:w-[60%] mx-auto bg-slate-100 py-10 px-5 rounded-sm mb-10 '>
                 <img className='h-[200px] md:h-[300px] lg:h-[400px] mx-auto mb-8 rounded-lg' src={image} alt="" />
-                <div className='card-body text-base md:text-lg px-0  relative'>
-
-                    <div className='flex justify-end gap-x-2  absolute top-0 md:top-[6%]  right-0 '>
+                <div className='card-body text-base md:text-lg p-0  relative'>
+                <div className='mr-3 inline-flex justify-end'>
+                    <div className='mr-3 inline-block'>
                         {
-                            isProductReported ? 
-                            <div className="tooltip" data-tip="You reported this product">
-                                <label htmlFor='report-modal' className={`btn btn-sm btn-disabled  text-2xl`}>
-                                    <FcCancel />
-                                </label>
-                            </div>
-                            
-                            :
-                            <div className="tooltip" data-tip="Report this Product">
-                                <label  htmlFor='report-modal' className={`btn btn-sm  btn-error text-2xl text-white `}>
-                                    <FcCancel />
-                                </label>
-                            </div>
-                            
+                            isProductReported ? <BsExclamationCircleFill onClick={handleReport} className='text-xl cursor-pointer' style={{ color: "orange" }} /> : <BsExclamationCircle onClick={handleReport} className='text-xl cursor-pointer' />
                         }
-                        <button onClick={handleAddtoWishlist} title='Nothing' className={`btn btn-sm $${buttonState === 'added' ? 'btn-disabled' : 'btn-success'} btn-success text-white text-xs md:text-base`} disabled={buttonState === 'added'}>
-                            {buttonState === 'added' ? 'Added to Wishlist' : 'Add to Wishlist'}
-                        </button>
                     </div>
+                    <div className='mr-3 inline-block'>
+                        {
+                            isWishlistProduct ? <GoHeartFill onClick={handleWishlist} className='text-xl cursor-pointer' style={{ color: "red" }} /> : <GoHeart onClick={handleWishlist} className='text-xl cursor-pointer' />
+                        }
+                    </div>
+                </div>
+
 
                     <p className='mt-4'><span className='font-bold me-1'>Brand: </span>{brand}</p>
                     <p><span className='font-bold me-1'>Model: </span>{productName}</p>
@@ -125,22 +156,6 @@ const ProductDetails = () => {
             {
                 <BookingModal product={product}></BookingModal>
             }
-
-            {/* confirm report product modal */}
-            <input type="checkbox"  id="report-modal" className="modal-toggle" checked={isModalOpen}
-            onChange={() => setIsModalOpen(!isModalOpen)}/>
-            <div className="modal w-auto max-w-none">
-                <div className="modal-box">
-                    <h3 className="font-bold text-lg">Are you sure you want to report this product</h3>
-
-                    <div className="modal-action">
-
-                        {/* if there is a button in form, it will close the modal */}
-                        <label onClick={handleReport}   htmlFor="report-modal" className="btn">Yes</label>
-                        <button onClick={handleCloseModal} className="btn">Cancel</button>
-                    </div>
-                </div>
-            </div>
         </div>
         
     ); 

@@ -5,7 +5,7 @@ import { AuthContext } from "../../contexts/AuthProvider";
 
 const Login = () => {
   const { register, handleSubmit, formState: {errors} } = useForm();
-  const {loginWithEmail} = useContext(AuthContext);
+  const {loginWithEmail, googleSignIn, saveUser} = useContext(AuthContext);
   const [loginError, setLoginError] = useState('')
   const navigate = useNavigate();
   const location = useLocation()
@@ -24,6 +24,19 @@ const Login = () => {
       const errorCode = errorMessage.startsWith('Firebase: Error (auth/') ? errorMessage.slice(22, -2) : errorMessage;
       setLoginError(errorCode);
     });
+  };
+
+  const handleGoogleLogin = () => {
+    googleSignIn()
+    .then(res => {
+      const user = res.user;
+      const googleUserRole = "buyer"
+      saveUser(user.displayName, user.email, googleUserRole);
+      navigate(from, {replace: true});
+    })
+    .catch(err => {
+      console.log(err.message);
+    })
   }
   return (
     <div className="h-[600px] flex justify-center items-center">
@@ -57,10 +70,10 @@ const Login = () => {
             {loginError && <p className="text-red-700">Error: {loginError}</p>}
             <input className='btn btn-accent w-full my-4 text-white' value="Login" type="submit" />
         </form>
-        <p>New to Phone Seller? Please <Link to='/signup' className="text-secondary">Sign Up.</Link></p>
+        <p>New to GadgetTradeHub? Please <Link to='/signup' className="text-secondary">Sign Up.</Link></p>
         <div className="divider">OR</div>
         <div>
-            <button className='btn btn-outline w-full'>CONTINUE WITH GOOGLE</button>
+            <button onClick={handleGoogleLogin} className='btn btn-outline w-full'>CONTINUE WITH GOOGLE</button>
         </div>
       </div>
     </div>

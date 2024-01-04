@@ -3,7 +3,6 @@ import toast from "react-hot-toast";
 import { useQuery } from "react-query";
 import ConfirmationModal from "../../Shared/ConfirmationModal/ConfirmationModal";
 import { Link } from "react-router-dom";
-import axios from "axios";
 
 const ReportedProducts = () => {
   const [selectedProduct, setSelectedProduct] = useState(null)
@@ -28,13 +27,11 @@ const ReportedProducts = () => {
 
   // Deleting the reported Product
   const handleDeleteProduct = (id) => {
-    console.log(id)
     fetch(`https://phone-seller-server2.vercel.app/products?id=${id}`, {
       method: "DELETE",
     })
     .then(res => res.json())
     .then(data => {
-     console.log(data);
       if(data.deletedCount > 0){
           handleRemoveProduct(id);
       }

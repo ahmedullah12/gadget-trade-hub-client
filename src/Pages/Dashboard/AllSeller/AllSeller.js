@@ -2,8 +2,15 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useQuery } from "react-query";
+import SellerInfoModal from "./SellerInfoModal";
 
 const AllSeller = () => {
+  const [sellerProducts, setSellerProducts] = useState([]);
+  const [selectedSeller, setSelectedSeller] = useState({
+    email: null,
+    name: null,
+  })
+  
   
   const {data: savedSellers, isLoading, refetch} = useQuery({
     queryKey: ["sellers"],
@@ -12,7 +19,22 @@ const AllSeller = () => {
       const data = result.json();
       return data;
     }
-  })
+  });
+
+  const loadSellerData = async (email, name) => {
+    setSelectedSeller({
+      email: email,
+      name: name,
+    })
+    try {
+      const res = await axios.get(`https://phone-seller-server2.vercel.app/products/seller?email=${email}`);
+      setSellerProducts(res.data);
+    } catch (error) {
+      console.log("Error fetching seller products:", error);
+    }
+  }
+
+
 
   const handleVerifySeller = (id, email) => {
     fetch(`https://phone-seller-server2.vercel.app/seller/verify/${id}`, {
@@ -48,7 +70,7 @@ const AllSeller = () => {
             <tr>
               <th></th>
               <th>Name</th>
-              <th></th>
+              
               
             </tr>
           </thead>
@@ -57,9 +79,10 @@ const AllSeller = () => {
             {
                 savedSellers.map((seller, i) => <tr key={i}>
                     <th>{i+1}</th>
-                    <td>{seller.name}</td>
-                    <td>{seller.email}
+                    <td className="link">
+                      <label onClick={() => loadSellerData(seller.email, seller.name)} htmlFor="sellerInfo-modal">{seller.name}</label>
                     </td>
+                    
                     <td>
                         {
                           seller?.verified === "true" ? <button className="btn btn-disabled btn-xs">Verified</button> :
@@ -70,6 +93,7 @@ const AllSeller = () => {
             }
           </tbody>
         </table>
+        <SellerInfoModal sellerInfo={selectedSeller} sellerProducts={sellerProducts}></SellerInfoModal>
       </div>
     </div>
   );

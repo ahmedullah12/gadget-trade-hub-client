@@ -27,7 +27,7 @@ const DashboardLayout = () => {
     <div>
       <label
             htmlFor="my-drawer-2"
-            className=" drawer-button absolute right-4 md:right-16 mt-4 top-[80%] lg:hidden"
+            className=" drawer-button absolute right-4 md:right-16 mt-4 top-[80%] z-50 lg:hidden"
           >
             <CiCirclePlus className="text-3xl text-primary" />
           </label>
@@ -56,6 +56,9 @@ const DashboardLayout = () => {
               <li>
                 <Link to="/dashboard/addproduct">Add a Product</Link>
               </li>
+              <li>
+                  <Link to="/dashboard/mywishlist">My Wishlist</Link>
+              </li>
              </>
               :
               savedUser?.role === "buyer" ? 
@@ -68,6 +71,7 @@ const DashboardLayout = () => {
                 </li>
               </>
               :
+              savedUser?.role === "admin" ?
               <>
                 <li>
                   <Link to="/dashboard/allseller">All Seller</Link>
@@ -78,6 +82,10 @@ const DashboardLayout = () => {
                 <li>
                   <Link to="/dashboard/allreports">All Reported Products</Link>
                 </li>
+              </> 
+              : 
+              <>
+                <p>Please go back</p>
               </>
             }
           </ul>

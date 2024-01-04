@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import app from '../firebase/firebase.config';
 
 
@@ -8,7 +8,8 @@ const auth = getAuth(app)
 
 const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(true);
+    const googleProvider = new GoogleAuthProvider();
 
 
     const signUpWithEmail = (email, password) => {
@@ -19,6 +20,13 @@ const AuthProvider = ({children}) => {
         setLoading(true)
         return signInWithEmailAndPassword(auth, email, password)
     };
+
+    const googleSignIn = () => {
+        setLoading(true)
+        return signInWithPopup(auth, googleProvider)
+    }
+
+
     const logOut = () => {
         return signOut(auth)
     };
@@ -26,21 +34,42 @@ const AuthProvider = ({children}) => {
         return updateProfile(auth.currentUser, {
             displayName: name,
         })
+    };
+
+    
+
+    const saveUser = (name, email, role) =>{
+        const user = {name, email, role};
+        fetch('https://phone-seller-server2.vercel.app/users', {
+            method: "POST",
+            headers: {
+                'content-type': 'application/json',
+            },
+            body: JSON.stringify(user)
+        })
+        .then(res => res.json())
+        .then(data => {
+        })
+        .catch(err => {})
     }
+    
+    
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
             setLoading(false);
-        })
+        });
 
-        return unsubscribe;
+        return () =>  unsubscribe();
     }, [])
     
     const authInfo = {
         signUpWithEmail,
         updateUser,
         loginWithEmail,
+        googleSignIn,
+        saveUser,
         logOut,
         loading,
         user

@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 const SignUp = () => {
     const {register, handleSubmit, formState: {errors}} = useForm();
-    const {signUpWithEmail, updateUser} = useContext(AuthContext);
+    const {signUpWithEmail, updateUser,googleSignIn, saveUser} = useContext(AuthContext);
     const [signUpError, setSignUpError] = useState();
     const navigate = useNavigate();
 
@@ -21,31 +21,29 @@ const SignUp = () => {
             updateUser(data.name)
             .then(() => {})
             .then(error => console.log(error))
-           
             saveUser(data.name, data.email, data.role);
+            navigate('/');
         })
         .catch(err => {
             console.log(err);
             setSignUpError(err.message);
         })
     }
+    const handleGoogleLogin = () => {
+        googleSignIn()
+        .then(res => {
+          const user = res.user;
+          console.log(user);
+          const googleUserRole = "buyer"
+          saveUser(user.displayName, user.email, googleUserRole);
+          navigate('/');
+        })
+        .catch(err => {
+          console.log(err.message);
+        })
 
 
-    const saveUser = (name, email, role) =>{
-        const user = {name, email, role};
-        fetch('https://phone-seller-server2.vercel.app/users', {
-            method: "POST",
-            headers: {
-                'content-type': 'application/json',
-            },
-            body: JSON.stringify(user)
-        })
-        .then(res => res.json())
-        .then(data => {
-            navigate('/');
-        })
-        .catch(err => console.log(err))
-    }
+    }   
     return (
         <div className=" flex justify-center items-center ">
       <div className="w-96 p-8">
@@ -105,7 +103,7 @@ const SignUp = () => {
         <p>Already have an account? Please <Link to='/login' className="text-secondary">Login.</Link></p>
         <div className="divider">OR</div>
         <div>
-            <button className='btn btn-outline w-full'>CONTINUE WITH GOOGLE</button>
+            <button onClick={handleGoogleLogin} className='btn btn-outline w-full'>CONTINUE WITH GOOGLE</button>
         </div>
       </div>
     </div>

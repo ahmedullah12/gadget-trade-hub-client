@@ -1,19 +1,43 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../../contexts/AuthProvider';
 import { useForm } from 'react-hook-form';
 import { useDropzone } from 'react-dropzone';
 import { CiCircleRemove } from "react-icons/ci";
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const AddProduct = () => {
     const {user} = useContext(AuthContext);
     const {register, handleSubmit,} = useForm();
+    const [selectedCategory, setSelectedCategory] = useState(null)
+    const [brands, setBrands] = useState(null);
     const [acceptedImage, setAcceptedImage] = useState({});
     const [descriptions, setDescriptions] = useState([]);
     const [descriptionInput, setDescriptionInput] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (selectedCategory) {
+            axios.get(`https://phone-seller-server2.vercel.app/brands?categoryName=${selectedCategory}`)
+                .then(response => {
+                    console.log(response)
+                    setBrands(response.data);
+                })
+                .catch(error => {
+                    console.error('Error fetching brands:', error);
+                });
+        }
+    }, [selectedCategory, setBrands]);
+
     
+
+
+
+const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+    };
+
 
     const handleAddDescription = (e) => {
         if (descriptionInput.trim() !== '') {
@@ -45,7 +69,8 @@ const AddProduct = () => {
   
         const formData = new FormData();
         formData.append('image', image);
-        console.log(imageHostKey)
+
+
         const url = `https://api.imgbb.com/1/upload?key=${imageHostKey}`
         fetch(url, {
             method: "POST",
@@ -65,9 +90,10 @@ const AddProduct = () => {
                     originalPrice: data.originalPrice,
                     resalePrice: data.resalePrice,
                     years_of_use: data.years_of_use,
-                    post_date: `${year}-${month}-${day}`
+                    post_date: `${year}-${month}-${day}`,
+                    category: data.category,
                 }
-
+                console.log(productData);
                 fetch("https://phone-seller-server2.vercel.app/products", {
                     method: "POST",
                     headers: {
@@ -87,21 +113,39 @@ const AddProduct = () => {
  
     } 
     return (
-        <div className='pt-6 ps-0 md:ps-3 lg:ps-4'>
-            <h2 className='text-3xl'>Add a Product {user?.displayName}</h2>
-            <h3 className='text-xl'>Please fill in all the input fields to add a product</h3>
+        <div className='pt-6 ps-0 md:ps-10 lg:ps-10'>
+            <h2 className='text-center md:text-start text-xl md:text-2xl lg:text-3xl ms-5'>Add a Product </h2>
+            <h3 className='text-base lg:text-xl ms-5 me-4'>Please fill in all the input fields to add a product</h3>
             {/* <p>{user?.displayName}</p> */}
 
             {/* add product form */}
             <form className='mt-6 ms-4'  onSubmit={handleSubmit(handleAddProduct)}>
+
+                {/* select category */}
                 <div className="form-control w-full">
+                    <label className='label'>
+                        <span className="label-text">Select the Category</span>
+                    </label>
+                    <select onInput={handleCategoryChange} {...register("category")} className="select select-bordered w-full max-w-xs">
+                        <option value=''>Select Category</option>
+                        <option value='mobile'>Mobile</option>
+                        <option value='watch'>Watch</option>
+                        <option value='laptop'>Laptop</option>
+                    </select>
+                </div>
+                {/* select brand depend on category */}
+                <div className="form-control w-full mt-4">
                     <label className='label'>
                         <span className="label-text">Select the Brand</span>
                     </label>
-                    <select {...register("brand")} className="select select-bordered w-full max-w-xs">
-                        <option value='Realme'>Realme</option>
-                        <option value='Samsung'>Samsung</option>
-                        <option value='Xiaomi'>Xiaomi</option>
+                    <select 
+                        {...register("brand", { required: "Brand is required" })} 
+                        className="select select-bordered w-full max-w-xs"
+                    >
+                        <option value=''>Select Brand</option>
+                        {brands?.map((brand, index) => (
+                            <option key={index} value={brand}>{brand}</option>
+                        ))}
                     </select>
                 </div>
                 <div className="form-control w-full ">
@@ -135,7 +179,7 @@ const AddProduct = () => {
                     </div>
                 </div>
                 
-                <div className="form-control w-full ">
+                <div className="form-control w-full mt-4">
                     <label className="label">
                         <span className="label-text">Location</span>
                     </label>
@@ -161,7 +205,7 @@ const AddProduct = () => {
                 </div>
                 <div className="form-control w-full ">
                     <label className="label">
-                        <span className="label-text">Years of Use</span>
+                        <span className="label-text">Time of Use</span>
                     </label>
                     <input {...register("years_of_use", {
                         required: "Years of Use is required"
@@ -178,11 +222,11 @@ const AddProduct = () => {
                             </label>
                             
                             <textarea onChange={(e) => setDescriptionInput(e.target.value)}
-                            value={descriptionInput} className="textarea textarea-bordered h-24 max-w-xs" placeholder="Description"></textarea>
+                            value={descriptionInput} className="textarea textarea-bordered h-24 max-w-xs w-[95%]" placeholder="Description"></textarea>
                         </div>
                         
                         <div className='mt-16'>
-                            <label onClick={handleAddDescription} className='btn btn-primary w-20 mt-3'>Add</label>
+                            <label onClick={handleAddDescription} className='btn btn-primary w-16 mt-3'>Add</label>
                         </div>
                     </div>
                     <div className='ms-4 mt-2 '>
@@ -196,7 +240,7 @@ const AddProduct = () => {
                     </div>
                 </div>
 
-                <div className='text-center mt-3'>
+                <div className='ms-[40%] md:ms-[20%] lg:ms-[10%] mt-3'>
                 <button className='btn btn-primary' type='submit'>Submit</button>
                 </div>
             </form>

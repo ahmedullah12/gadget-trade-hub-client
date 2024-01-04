@@ -1,17 +1,26 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Category from './Category';
+import { useQuery } from 'react-query';
 
 const Categories = () => {
-    const [categories, setCategories] = useState(null);
+    
 
-    useEffect(() => {
-        axios.get('https://phone-seller-server2.vercel.app/categories').then((response) => {
-            setCategories(response.data)
-        })
-    }, [])
+    const {data: categories, isLoading} = useQuery({
+        queryKey: ["categories"],
+        queryFn: async() => {
+            const res = await axios.get('https://phone-seller-server2.vercel.app/categories');
+            const data = await res.data;
+            return data;
+        }
+    })
 
-    if (!categories) return null;
+    
+    if(isLoading){
+        return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+            <span className="loading loading-spinner loading-lg"></span>
+        </div>
+    }
     return (
         <div id='categories' className=' mt-10 w-[90%] mx-auto'>
             <h2 className='text-3xl text-center my-3'>Categories</h2>
