@@ -48,10 +48,10 @@ const AllSeller = () => {
       }
     })
   }
-  if (isLoading) {
-    return (
-      <span className="loading loading-spinner loading-lg mx-96 my-80"></span>
-    );
+  if(isLoading){
+    return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+    <span className="loading loading-spinner loading-lg"></span>
+  </div>
   }
   return (
     <div className="mx-3">
