@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import BookingModal from '../BookingModal/BookingModal';
 import { AuthContext } from '../../contexts/AuthProvider';
@@ -11,12 +11,19 @@ import { BsExclamationCircle, BsExclamationCircleFill } from "react-icons/bs";
 
 const ProductDetails = () => {
     const product = useLoaderData();
-    const {_id,sellerName,sellerEmail, image, brand, description, originalPrice, resalePrice, productName, post_date, location, years_of_use, sellerVerified} = product;
+    const {_id,sellerName,sellerEmail, image, brand, description, originalPrice, resalePrice, productName, post_date, location, years_of_use} = product;
     const {user} = useContext(AuthContext);
-    // const [isModalOpen, setIsModalOpen] = useState(false);
-    // const [buttonState, setButtonState] = useState('');
 
 
+    const {data: seller = {} } = useQuery({
+        queryKey: ["seller"],
+        queryFn: async() => {
+            const res = await axios.get(`https://phone-seller-server2.vercel.app/user?email=${sellerEmail}`);
+            const data = await res.data;
+            return data;
+        }
+    })
+    console.log(seller);
     // get wishlist product
     const {data: wishlistProducts = [], refetch: wishlistRefetch} = useQuery({
         queryKey: ["wishlist products"],
@@ -140,7 +147,7 @@ const ProductDetails = () => {
                     <p className='mt-4'><span className='font-bold me-1'>Brand: </span>{brand}</p>
                     <p><span className='font-bold me-1'>Model: </span>{productName}</p>
                     <p><span className='font-bold me-1'>Description: </span>{description}</p>
-                    <p><span className='font-bold me-1'>Seller:</span> {sellerName} <span>{sellerVerified === "true" && <MdVerified style={{ color: 'blue' }} className="inline mb-1"/>}</span></p>
+                    <p><span className='font-bold me-1'>Seller:</span> {sellerName} <span>{seller.verified === "true" && <MdVerified style={{ color: 'blue' }} className="inline mb-1"/>}</span></p>
                     <p><span className='font-bold me-1'>Location: </span>{location}</p>
                     <p><span className='font-bold me-1'>Original Price: </span>{originalPrice}</p>
                     <p><span className='font-bold me-1'>Resale Price: </span>{resalePrice}</p>

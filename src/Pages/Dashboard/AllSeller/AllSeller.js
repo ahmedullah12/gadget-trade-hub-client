@@ -36,23 +36,15 @@ const AllSeller = () => {
 
 
 
-  const handleVerifySeller = (id, email) => {
+  const handleVerifySeller = (id) => {
     fetch(`https://phone-seller-server2.vercel.app/seller/verify/${id}`, {
       method: "PUT",
     })
     .then(res => res.json())
     .then(data => {
       if(data.modifiedCount > 0){
-        fetch(`https://phone-seller-server2.vercel.app/seller-products/verify?email=${email}`, {
-          method: "PUT"
-        })
-        .then(res => res.json())
-        .then(data => {
-          if(data.acknowledged){
             toast.success("Seller Verified Successfully");
             refetch();
-          }
-        })
       }
     })
   }

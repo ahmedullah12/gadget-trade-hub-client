@@ -6,7 +6,7 @@ import { AuthContext } from "../contexts/AuthProvider";
 import { CiCirclePlus } from "react-icons/ci";
 
 const DashboardLayout = () => {
-  const {user} = useContext(AuthContext)
+  const {user} = useContext(AuthContext);
 
   const {data: savedUser, isLoading} = useQuery({
     queryKey: ["user",user],
@@ -16,7 +16,6 @@ const DashboardLayout = () => {
       return data;
     }
   });
-
 
   if(isLoading){
     return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
