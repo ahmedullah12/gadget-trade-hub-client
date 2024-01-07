@@ -5,7 +5,8 @@ import ConfirmationModal from "../../Shared/ConfirmationModal/ConfirmationModal"
 import { Link } from "react-router-dom";
 
 const ReportedProducts = () => {
-  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
   const {data: reportedProducts, isLoading, refetch} = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
@@ -19,7 +20,6 @@ const ReportedProducts = () => {
 
   const openUpdateModal = product => {
     setSelectedProduct(product);
-    console.log(product)
   };
   const closeUpdateModal = () => {
     setSelectedProduct(null);
@@ -40,7 +40,6 @@ const ReportedProducts = () => {
 
   // Removing the Product from Reported Products
   const handleRemoveProduct = (id) => {
-    console.log(id);
     fetch(`https://phone-seller-server2.vercel.app/reports?id=${id}`,{
             method: "DELETE"
           })
@@ -54,22 +53,26 @@ const ReportedProducts = () => {
           .catch(err => console.log(err))
   }
 
-  if (isLoading) {
-    return (
-      <span className="loading loading-spinner loading-lg mx-96 my-80"></span>
-    );
+  const hasReportedProducts = reportedProducts && reportedProducts.length > 0;
+
+  if(isLoading){
+    return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+    <span className="loading loading-spinner loading-lg"></span>
+  </div>
   }
   return (
     <div>
       <div className="overflow-x-auto">
-        <table className="table table-zebra">
+        {
+          hasReportedProducts ? (
+            <table className="table table-zebra">
           {/* head */}
           <thead>
             <tr>
               <th></th>
               <th>P Name</th>
               <th>Remove</th>
-              <th>Delete Product</th>
+              <th>Delele P.</th>
             </tr>
           </thead>
           <tbody>
@@ -97,6 +100,12 @@ const ReportedProducts = () => {
             
           </tbody>
         </table>
+          ) :
+          (
+            <div className="text-center mt-8">
+                <p className="text-lg">There is no reported Product.</p>
+            </div>
+          )}
         {
             selectedProduct && 
             <ConfirmationModal

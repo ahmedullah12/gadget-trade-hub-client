@@ -42,58 +42,67 @@ const AllProducts = () => {
   })
   }
 
+  const hasAddedProduct = products && products.length > 0;
 
-  if (isLoading) {
-    return (
-      <span className="loading loading-spinner loading-lg mx-96 my-80"></span>
-    );
+  if(isLoading){
+    return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+    <span className="loading loading-spinner loading-lg"></span>
+  </div>
   }
+
   return (
     <div className="min-h-full ps-5 pt-2">
       <div className="overflow-x-auto me-5 mt-5">
-        <table className="table pe-5 rounded-lg">
-          {/* head */}
-          <thead>
-            <tr>
-              <th></th>
-              <th>Product Name</th>
-              
-            </tr>
-          </thead>
-          <tbody>
-            {/* row 1 */}
-            {products.map((product, i) => (
-              <tr key={i}>
-                <th>{i + 1}</th>
-                
-                <td>
-                  <Link
-                    to={`/product/${product._id}`}
-                    className="hover:underline"
-                    title="Click to view product details"
-                  >
-                    {product.productName}
-                  </Link>
-                </td>
-                <td>
-                    <label
-                        className="btn btn-xs btn-primary text-xs"
-                        htmlFor="update-modal"
-                        onClick={() => openUpdateModal(product)}>
-                            Update
-                    </label>
-                </td>
-                
-                <td>
-                    <label htmlFor="confirmation-modal"
-                     className="btn btn-xs btn-error text-xs text-white"
-                     onClick={() => openUpdateModal(product)}
-                     >Delete</label>
-                </td>
-              </tr>
-            ))} 
-          </tbody>
-        </table>
+        {
+          hasAddedProduct ? (
+            <table className="table pe-5 rounded-lg">
+          
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Product Name</th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product, i) => (
+                  <tr key={i}>
+                    <th>{i + 1}</th>
+                    
+                    <td>
+                      <Link
+                        to={`/product/${product._id}`}
+                        className="hover:underline"
+                        title="Click to view product details"
+                      >
+                        {product.productName}
+                      </Link>
+                    </td>
+                    <td>
+                        <label
+                            className="btn btn-xs btn-primary text-xs"
+                            htmlFor="update-modal"
+                            onClick={() => openUpdateModal(product)}>
+                                Update
+                        </label>
+                    </td>
+                    
+                    <td>
+                        <label htmlFor="confirmation-modal"
+                        className="btn btn-xs btn-error text-xs text-white"
+                        onClick={() => openUpdateModal(product)}
+                        >Delete</label>
+                    </td>
+                  </tr>
+                ))} 
+              </tbody>
+            </table>
+            ) : 
+            (
+              <div className="text-center mt-8">
+                  <p className="text-lg">You haven't added any product yet.</p>
+              </div>
+            )}
         {
                 selectedProduct && 
                 <UpdateModal

@@ -63,7 +63,7 @@ const Login = () => {
                 })}
                 type="password" placeholder="Enter your Password" className="input input-bordered w-full max-w-xs" />
                 <label className="label">
-                    <span className="label-text-alt">Forgot Password?</span>
+                    {/* <span className="label-text-alt">Forgot Password?</span> */}
                 </label>
                 {errors.password && <p className="text-red-600" role="alert">{errors.password.message}</p>}
             </div>

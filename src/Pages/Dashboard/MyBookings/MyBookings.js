@@ -42,52 +42,64 @@ const MyBookings = () => {
     }
 
 
+    const hasBookings = bookings && bookings.length > 0;
+
     if(isLoading){
       return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
       <span className="loading loading-spinner loading-lg"></span>
     </div>
     }
+
+  
   return (
     <div className="min-h-full ps-5 pe-2">
       <div className="overflow-x-auto">
-        <table className="table table-zebra">
+        {
+          hasBookings ? (
+            <table className="table table-zebra">
           {/* head */}
-          <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Cancel</th>
-              <th>Payment</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-                bookings.map((booking, i) => <tr key={i}>
-                <th>{i + 1}</th>
-                <td>{booking.productName}</td>
-                <td>
-                    <label onClick={() => openUpdateModal(booking)} htmlFor="confirmation-modal"
-                     className={`btn btn-xs ${booking.paid ? 'btn-disabled' : 'btn-error'} text-white`}>
-                      Cancel
-                    </label>
-                </td>
-                <td> 
-                    {
-                      booking.price && !booking.paid && <Link to={`/dashboard/payment/${booking._id}`}
-                      className="btn btn-xs btn-primary ">
-                        Pay
-                      </Link>
-                    }
-                    {
-                      booking.price && booking.paid && <span className="text-green-600">
-                        Paid
-                      </span>
-                    }
-                </td>
-              </tr>)
-            }
-          </tbody>
-        </table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Name</th>
+                  <th>Cancel</th>
+                  <th>Payment</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                    bookings.map((booking, i) => <tr key={i}>
+                    <th>{i + 1}</th>
+                    <td>{booking.productName}</td>
+                    <td>
+                        <label onClick={() => openUpdateModal(booking)} htmlFor="confirmation-modal"
+                        className={`btn btn-xs ${booking.paid ? 'btn-disabled' : 'btn-error'} text-white`}>
+                          Cancel
+                        </label>
+                    </td>
+                    <td> 
+                        {
+                          booking.price && !booking.paid && <Link to={`/dashboard/payment/${booking._id}`}
+                          className="btn btn-xs btn-primary ">
+                            Pay
+                          </Link>
+                        }
+                        {
+                          booking.price && booking.paid && <span className="text-green-600">
+                            Paid
+                          </span>
+                        }
+                    </td>
+                  </tr>)
+                }
+              </tbody>
+            </table>
+          ) :
+            (
+              <div className="text-center mt-8">
+                  <p className="text-lg">You haven't booked any product yet.</p>
+              </div>
+            )}
 
         {
           selectedProduct && 

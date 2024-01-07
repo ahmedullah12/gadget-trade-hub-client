@@ -30,6 +30,8 @@ const MyWishlist = () => {
   })
 
 
+
+
   const handleRemoveWishProduct = (id) => {
     axios.delete(`https://phone-seller-server2.vercel.app/wishlist?productId=${id}`)
     .then(res => {
@@ -40,6 +42,8 @@ const MyWishlist = () => {
     })
   }
 
+  const hasWished = wishlist && wishlist.length > 0;
+
   if(isLoading){
     return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
     <span className="loading loading-spinner loading-lg"></span>
@@ -48,7 +52,9 @@ const MyWishlist = () => {
   return (
     <div>
       <div className="overflow-x-auto">
-        <table className="table table-zebra">
+        {
+          hasWished ? (
+            <table className="table table-zebra">
           {/* head */}
           <thead>
             <tr>
@@ -78,6 +84,12 @@ const MyWishlist = () => {
             
           </tbody>
         </table>
+          ) :
+          (
+            <div className="text-center mt-8">
+                <p className="text-lg">You haven't added any product to wishlist.</p>
+            </div>
+          )}
       </div>
     </div>
   );

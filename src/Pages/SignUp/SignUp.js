@@ -26,7 +26,9 @@ const SignUp = () => {
         })
         .catch(err => {
             console.log(err);
-            setSignUpError(err.message);
+            const errorMessage = err.message;
+            const errorCode = errorMessage.startsWith('Firebase: Error (auth/') ? errorMessage.slice(22, -2) : errorMessage;
+            setSignUpError(errorCode);
         })
     }
     const handleGoogleLogin = () => {
@@ -95,7 +97,7 @@ const SignUp = () => {
                 {errors.password && <p className="text-red-600" role="alert">{errors.password.message}</p>}
             </div>
             {
-                signUpError && <p className='text-red-700'>{signUpError}</p>
+                signUpError && <p className='text-red-700'>Error: {signUpError}</p>
             }
 
             <input className='btn btn-accent w-full my-4 text-white' value="Sign Up" type="submit" />

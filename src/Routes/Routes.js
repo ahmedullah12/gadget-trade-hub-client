@@ -17,10 +17,11 @@ import ReportedProducts from "../Pages/Dashboard/ReportedProducts/ReportedProduc
 import Payment from "../Pages/Dashboard/Payment/Payment";
 import ErrorPage from "../Pages/Shared/ErrorPage/ErrorPage";
 import About from "../Pages/About/About";
+import Contact from "../Pages/Contact/Contact";
 
 const router = createBrowserRouter([
     {
-        path: '',
+        path: '/',
         element: <MainLayout></MainLayout>,
         errorElement: <ErrorPage></ErrorPage>,
         children: [
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
             {
                 path: '/about',
                 element: <About></About>
+            },
+            {
+                path: '/contact',
+                element: <Contact></Contact>
             },
             {
                 path: '/products/:category',
