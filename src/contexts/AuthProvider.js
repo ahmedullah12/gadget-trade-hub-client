@@ -59,6 +59,26 @@ const AuthProvider = ({children}) => {
         const unsubscribe = onAuthStateChanged(auth, currentUser => {
             setUser(currentUser);
             setLoading(false);
+
+            if(currentUser && currentUser.email){
+                const loggedUser  = {
+                    email: currentUser.email,
+                };
+                fetch('https://phone-seller-server2.vercel.app/jwt', {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json"
+                    },
+                    body: JSON.stringify(loggedUser)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    localStorage.setItem('accessToken', data.token)
+                })
+            }
+            else{
+                localStorage.removeItem('accessToken');
+            }
         });
 
         return () =>  unsubscribe();

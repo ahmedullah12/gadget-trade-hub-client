@@ -10,6 +10,7 @@ const CheckoutForm = ({booking}) => {
     const stripe = useStripe();
     const elements = useElements();
     const {price, buyerName, buyerEmail, _id} = booking;
+    console.log(price)
 
     useEffect(() => {
       // Create PaymentIntent as soon as the page loads

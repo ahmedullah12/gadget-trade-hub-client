@@ -4,19 +4,30 @@ import { useQuery } from "react-query";
 import axios from "axios";
 import ConfirmationModal from "../../Shared/ConfirmationModal/ConfirmationModal";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const MyBookings = () => {
     const {user} = useContext(AuthContext);
     const [selectedProduct, setSelectedProduct] = useState(null);
-
+    const navigate = useNavigate();
+    
     
     const {data: bookings, isLoading, refetch} = useQuery({
       queryKey: ["bookings", user],
       queryFn: async() => {
-         const res = await fetch(`https://phone-seller-server2.vercel.app/bookings?email=${user?.email}`);
+         const res = await fetch(`https://phone-seller-server2.vercel.app/bookings?email=${user?.email}`, {
+          method: "GET",
+          headers: {
+            authorization: `Bearer ${localStorage.getItem("accessToken")}`
+          }
+         });
          const data = await res.json();
-         return data;
+         if(!data.error){
+          return data;
+         }
+         else{
+          navigate('/');
+         }
       }
     })
 
