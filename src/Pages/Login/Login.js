@@ -5,7 +5,7 @@ import { AuthContext } from "../../contexts/AuthProvider";
 
 const Login = () => {
   const { register, handleSubmit, formState: {errors} } = useForm();
-  const {loginWithEmail, googleSignIn, saveUser} = useContext(AuthContext);
+  const {loginWithEmail, googleSignIn, saveUser, githubSignIn} = useContext(AuthContext);
   const [loginError, setLoginError] = useState('')
   const navigate = useNavigate();
   const location = useLocation()
@@ -35,7 +35,23 @@ const Login = () => {
       navigate(from, {replace: true});
     })
     .catch(err => {
-      console.log(err.message);
+      const errorMessage = err.message;
+      const errorCode = errorMessage.startsWith('Firebase: Error (auth/') ? errorMessage.slice(22, -2) : errorMessage;
+      setLoginError(errorCode);
+    })
+  }
+  const handleGithubSignin = () => {
+    githubSignIn()
+    .then(res => {
+      const user = res.user;
+      const githubUserRole = "buyer"
+      saveUser(user.displayName, user.email, githubUserRole);
+      navigate(from, {replace: true});
+    })
+    .catch(err => {
+      const errorMessage = err.message;
+      const errorCode = errorMessage.startsWith('Firebase: Error (auth/') ? errorMessage.slice(22, -2) : errorMessage;
+      setLoginError(errorCode);
     })
   }
   return (
@@ -73,7 +89,10 @@ const Login = () => {
         <p>New to GadgetTradeHub? Please <Link to='/signup' className="text-secondary">Sign Up.</Link></p>
         <div className="divider">OR</div>
         <div>
-            <button onClick={handleGoogleLogin} className='btn btn-outline w-full'>CONTINUE WITH GOOGLE</button>
+            <button onClick={handleGoogleLogin} className='btn btn-outline btn-accent w-full'>CONTINUE WITH GOOGLE</button>
+        </div>
+        <div className="mt-3">
+            <button onClick={handleGithubSignin} className='btn btn-outline w-full'>CONTINUE WITH GITHUB</button>
         </div>
       </div>
     </div>

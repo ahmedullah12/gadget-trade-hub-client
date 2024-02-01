@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 const SignUp = () => {
     const {register, handleSubmit, formState: {errors}} = useForm();
-    const {signUpWithEmail, updateUser,googleSignIn, saveUser} = useContext(AuthContext);
+    const {signUpWithEmail, updateUser,googleSignIn,githubSignIn, saveUser} = useContext(AuthContext);
     const [signUpError, setSignUpError] = useState();
     const navigate = useNavigate();
 
@@ -35,17 +35,30 @@ const SignUp = () => {
         googleSignIn()
         .then(res => {
           const user = res.user;
-          console.log(user);
           const googleUserRole = "buyer"
           saveUser(user.displayName, user.email, googleUserRole);
           navigate('/');
         })
         .catch(err => {
-          console.log(err.message);
+            const errorMessage = err.message;
+            const errorCode = errorMessage.startsWith('Firebase: Error (auth/') ? errorMessage.slice(22, -2) : errorMessage;
+            setSignUpError(errorCode);
         })
-
-
-    }   
+    };
+    const handleGithubSignin = () => {
+        githubSignIn()
+        .then(res => {
+          const user = res.user;
+          const githubUserRole = "buyer"
+          saveUser(user.displayName, user.email, githubUserRole);
+          navigate('/');
+        })
+        .catch(err => {
+          const errorMessage = err.message;
+          const errorCode = errorMessage.startsWith('Firebase: Error (auth/') ? errorMessage.slice(22, -2) : errorMessage;
+          setSignUpError(errorCode);
+        })
+      }
     return (
         <div className=" flex justify-center items-center ">
       <div className="w-96 p-8">
@@ -106,6 +119,9 @@ const SignUp = () => {
         <div className="divider">OR</div>
         <div>
             <button onClick={handleGoogleLogin} className='btn btn-outline w-full'>CONTINUE WITH GOOGLE</button>
+        </div>
+        <div>
+            <button onClick={handleGithubSignin} className='btn btn-outline w-full'>CONTINUE WITH GOOGLE</button>
         </div>
       </div>
     </div>
